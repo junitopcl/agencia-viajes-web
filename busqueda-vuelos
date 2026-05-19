@@ -1,0 +1,68 @@
+<?php
+$vuelosDisponibles = [
+    [
+        "origen" => "Santiago",
+        "destino" => "Buenos Aires",
+        "fecha" => "2026-06-15",
+        "precio" => 249990
+    ],
+    [
+        "origen" => "Santiago",
+        "destino" => "Lima",
+        "fecha" => "2026-07-10",
+        "precio" => 199990
+    ],
+    [
+        "origen" => "Santiago",
+        "destino" => "Cartagena",
+        "fecha" => "2026-08-05",
+        "precio" => 420000
+    ]
+];
+
+$origen = strtolower(trim($_GET["origen"] ?? ""));
+$destino = strtolower(trim($_GET["destino"] ?? ""));
+$fecha = trim($_GET["fecha"] ?? "");
+
+$resultados = array_filter($vuelosDisponibles, function ($vuelo) use ($origen, $destino, $fecha) {
+    $coincideOrigen = $origen === "" || strtolower($vuelo["origen"]) === $origen;
+    $coincideDestino = $destino === "" || strtolower($vuelo["destino"]) === $destino;
+    $coincideFecha = $fecha === "" || $vuelo["fecha"] === $fecha;
+
+    return $coincideOrigen && $coincideDestino && $coincideFecha;
+});
+?>
+
+<section class="busqueda-vuelos">
+    <h2>Búsqueda de vuelos</h2>
+
+    <form method="GET">
+        <label>Origen:</label>
+        <input type="text" name="origen" placeholder="Ej: Santiago">
+
+        <label>Destino:</label>
+        <input type="text" name="destino" placeholder="Ej: Lima">
+
+        <label>Fecha de viaje:</label>
+        <input type="date" name="fecha">
+
+        <button type="submit">Buscar vuelos</button>
+    </form>
+
+    <h3>Resultados disponibles</h3>
+
+    <?php if (count($resultados) > 0): ?>
+        <ul>
+            <?php foreach ($resultados as $vuelo): ?>
+                <li>
+                    <?= htmlspecialchars($vuelo["origen"]) ?> -
+                    <?= htmlspecialchars($vuelo["destino"]) ?> |
+                    Fecha: <?= htmlspecialchars($vuelo["fecha"]) ?> |
+                    Precio: $<?= number_format($vuelo["precio"], 0, ",", ".") ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>No se encontraron vuelos para los criterios ingresados.</p>
+    <?php endif; ?>
+</section>
